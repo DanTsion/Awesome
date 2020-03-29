@@ -2,11 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ProtectedRoutingModule } from './protected-routing.module';
-import { DashboardModule } from './dashboard/dashboard.module';
-import { ParametersModule } from './parameters/parameters.module';
-import { PlanningModule } from './planning/planning.module';
-import { ProfilModule } from './profil/profil.module';
-import { WorkdayModule } from './workday/workday.module';
 import { ProtectedComponent } from './protected.component';
 import { SharedModule } from '../shared/shared.module';
 
@@ -16,12 +11,7 @@ import { SharedModule } from '../shared/shared.module';
   imports: [
     CommonModule,
     ProtectedRoutingModule,
-    DashboardModule,
-    ParametersModule,
-    PlanningModule,
-    ProfilModule,
     SharedModule,
-    WorkdayModule
   ]
 })
 export class ProtectedModule { }
