@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { UsersService } from 'src/app/core/services/users.service';
 
 @Component({
   selector: 'al-login-form',
@@ -8,14 +10,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styles: []
 })
 export class LoginFormComponent implements OnInit {
-  registerForm: FormGroup;
+  loginForm: FormGroup;
 
   constructor(
     private router: Router,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private authService: AuthService,
+  ) { }
 
   ngOnInit() {
-    this.registerForm = this.fb.group({
+    this.loginForm = this.fb.group({
       'email': ['', [
         Validators.required,
         Validators.email
@@ -28,12 +32,15 @@ export class LoginFormComponent implements OnInit {
     });
   }
 
-  get email() { return this.registerForm.get('email') }
-  get password() { return this.registerForm.get('password') }
+  get email() { return this.loginForm.get('email') }
+  get password() { return this.loginForm.get('password') }
 
-  submit() {
-    console.info(this.email.value);
-    console.info(this.password.value);
-    this.router.navigate(['/app/dashboard']);
+  submit(): void {
+    this.authService
+      .login(this.email.value, this.password.value)
+      .subscribe(
+        _ => this.router.navigate(['/app/dashboard']),
+        _ => this.loginForm.reset()
+      );
   }
 }

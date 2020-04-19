@@ -5,7 +5,8 @@ import { ProtectedComponent } from './protected.component';
 
 const routes: Routes = [
   {
-    path: 'app', component: ProtectedComponent,
+    path: 'app', 
+    component: ProtectedComponent,
     children: [
       {
         path: 'dashboard',

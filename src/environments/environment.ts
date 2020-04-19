@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  firebaseConfig: {
+  firebase: {
     apiKey: "AIzaSyByqdE2_Eb22sOpMLxfSyCaEONIZap0ct8",
     authDomain: "awesome-list-aebb7.firebaseapp.com",
     databaseURL: "https://awesome-list-aebb7.firebaseio.com",
@@ -12,7 +12,14 @@ export const environment = {
     storageBucket: "awesome-list-aebb7.appspot.com",
     messagingSenderId: "701577145483",
     appId: "1:701577145483:web:f9709d283212328213388e",
-    measurementId: "G-9N2PR1431F"
+    measurementId: "G-9N2PR1431F",
+    auth: {
+      baseURL: 'https://www.googleapis.com/identitytoolkit/v3/relyingparty'
+     },
+     firestore: {
+      baseURL : 
+       'https://firestore.googleapis.com/v1/projects/awesome-list-aebb7/databases/(default)/documents'
+     }
   }
 };
 

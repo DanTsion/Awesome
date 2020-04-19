@@ -6,14 +6,17 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class LayoutService {
 
-  private isSidenavCollapsed: BehaviorSubject<boolean | null> = new BehaviorSubject(null);
+  private isSidenavCollapsed: BehaviorSubject<boolean | null> = new BehaviorSubject(false);
   public readonly isSidenavCollapsed$: Observable<boolean|null> = this.isSidenavCollapsed.asObservable();
   
   constructor() { }
 
-  public toggleSidenav(): void {
-    
-    this.isSidenavCollapsed.next(true);
+  public toggleSidenav() {
+    // if(this.isSidenavCollapsed.value == true){
+    //   this.isSidenavCollapsed.next(false);
+    // }
+    // else this.isSidenavCollapsed.next(true);
+  
+    this.isSidenavCollapsed.next(!this.isSidenavCollapsed.value);
   }
-
 }
