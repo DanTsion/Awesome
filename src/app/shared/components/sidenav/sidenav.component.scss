@@ -1,5 +1,14 @@
 .list-group-item:hover {
     cursor: pointer;
     box-shadow: 3px 3px 3px 3px #cfcfcf;
-   }
+}
 
+.nav-cover {
+    position: relative;
+}
+.img-avatar {
+   position: absolute;
+   bottom: 20px;
+   left: 20px;
+   z-index: 1000;
+}

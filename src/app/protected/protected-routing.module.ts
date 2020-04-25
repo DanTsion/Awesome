@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { ProtectedComponent } from './protected.component';
+import { AuthGuard } from '../core/guards/auth.guard';
+import { RoleGuard } from '../core/guards/role.guard';
 
 
 const routes: Routes = [
   {
     path: 'app', 
     component: ProtectedComponent,
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
     children: [
       {
         path: 'dashboard',
@@ -14,7 +18,8 @@ const routes: Routes = [
       },
       {
         path: 'parameters',
-        loadChildren: () => import('./parameters/parameters.module').then(m => m.ParametersModule)
+        loadChildren: () => import('./parameters/parameters.module').then(m => m.ParametersModule),
+        canActivate: [RoleGuard]
       },
       {
         path: 'planning',

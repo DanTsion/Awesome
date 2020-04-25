@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { User } from 'src/app/shared/models/user';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { switchMap, tap, catchError, finalize, concatMap, mergeMap } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, concatMap, mergeMap, delay } from 'rxjs/operators';
 import { UsersService } from './users.service';
 import { ErrorService } from './error.service';
 import { LoaderService } from './loader.service';
+import { Router } from '@angular/router';
+import { ToastrService } from './toastr.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +21,14 @@ export class AuthService {
   constructor(private http: HttpClient,
     private usersService: UsersService,
     private errorService: ErrorService,
-    private loaderService: LoaderService) { }
+    private loaderService: LoaderService,
+    private router: Router,
+    private toastrService: ToastrService) { }
 
   public login(email: string, password: string): Observable<User | null> {
+
+    this.loaderService.setLoading(true);
+
     const url = `${environment.firebase.auth.baseURL}/verifyPassword?key=
                    ${environment.firebase.apiKey}`;
     const data = {
@@ -37,8 +44,13 @@ export class AuthService {
       switchMap((data: any) => {
         const userId: string = data.localId;
         const jwt: string = data.idToken;
+        this.saveAuthData(userId, jwt);
         return this.usersService.get(userId, jwt);
-      })
+      }),
+      tap(user => this.user.next(user)),
+      tap(_ => this.logoutTimer(3600)),
+      catchError(error => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
     );
   }
 
@@ -69,17 +81,60 @@ export class AuthService {
           id: data.localId,
           name: name
         });
+        this.saveAuthData(user.id, jwt);
 
         return this.usersService.save(user, jwt);
       }),
       tap(user => this.user.next(user)),
+      tap(_ => this.logoutTimer(3600)),
       catchError(error => this.errorService.handleError(error)),
       finalize(() => this.loaderService.setLoading(false))
     );
   }
 
+  private logoutTimer(expirationTime: number): void {
+    of(true).pipe(
+      delay(expirationTime * 1000)
+    ).subscribe(_ => this.logOut());
+  }
+
   logOut() {
     this.user.next(null);
+    this.router.navigate(['/login'])
+    localStorage.removeItem('expirationDate');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');;
+  }
+
+  private saveAuthData(userId: string, token: string) {
+    const now = new Date();
+    const expirationDate = (now.getTime() + 3600 * 1000).toString();
+    localStorage.setItem('expirationDate', expirationDate);
+    localStorage.setItem('token', token);
+    localStorage.setItem('userId', userId);
+  }
+
+  get currentUser(): User {
+    return this.user.getValue();
+  }
+
+  autoLogin(user: User) {
+    this.user.next(user);
+    this.router.navigate(['/dashboard']);
+  }
+
+  public updateUserState(user: User): Observable<User | null> {
+    this.loaderService.setLoading(true);
+
+    return this.usersService.update(user).pipe(
+      tap(user => this.user.next(user)),
+      tap(_ => this.toastrService.showToastr({
+        category: 'success',
+        message: 'Vos informations ont été mises à jour !'
+      })),
+      catchError(error => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
+    );
   }
 }
 

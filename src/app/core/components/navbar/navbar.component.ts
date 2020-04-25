@@ -18,6 +18,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public user: User;
   private subscription: Subscription;
   public registerPath = 'register';
+  public protectedPath = 'app/parameters'
 
   constructor(private router: Router,
     private layoutService: LayoutService,
